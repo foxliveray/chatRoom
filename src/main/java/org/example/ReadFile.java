@@ -20,10 +20,10 @@ class ReadFile {
   // a string).
 
   public static void sendFileName(
-        Socket s, String fileName) 
-        throws IOException {
+          Socket s, String fileName)
+          throws IOException {
 
-    // FILL IN THIS METHOD - Hint: create a stream to 
+    // FILL IN THIS METHOD - Hint: create a stream to
     // send the filename to the server
     DataOutputStream dos = new DataOutputStream(s.getOutputStream()); //写Socket的输出流
     dos.writeUTF(fileName);
@@ -31,15 +31,28 @@ class ReadFile {
     dos.close();
   }
 
-  // This method will receive the file from the Server, 
+  // This method will receive the file from the Server,
   // or the result of the attempt to read the file.
 
-  public static void receiveFile(Socket s) 
-        throws IOException {
+  public static void receiveFile(Socket s, String file_path)
+          throws IOException {
 
-    // FILL IN THIS METHOD - Hint: look at the 
+    // FILL IN THIS METHOD - Hint: look at the
     // simpleClient code
+    InputStream input = s.getInputStream();
+    DataInputStream inputStream  = new DataInputStream(input);
+    DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(file_path));
+    byte[] buf = new byte[1027*9];
+    int len = 0;
+    while((len=inputStream.read(buf))!=-1){
+      outputStream.write(buf, 0, len);
+    }
 
+    outputStream.flush();
+    System.out.println("file received!");
+
+    inputStream.close();
+    outputStream.close();
   }
 
   public static void main(String args[]) {
@@ -49,7 +62,7 @@ class ReadFile {
     // Did we receive the correct number of arguments?
     if (args.length != 2) {
       System.out.println(
-          "Usage: java ReadFile <server> <file>");
+              "Usage: java ReadFile <server> <file>");
       System.exit (-1);
     }
 
@@ -57,12 +70,11 @@ class ReadFile {
 
       // Open our connection to args[0]
       s = new Socket(args[0], port);
-
       // Send the file name to the Server
       sendFileName (s, args[1]);
 
       // Output the file (or result of the request)
-      receiveFile (s);
+      receiveFile (s, "example.txt");
 
       // When the EOF is reached, just close the 
       // connection and exit
