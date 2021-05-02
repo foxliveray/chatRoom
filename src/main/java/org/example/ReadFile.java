@@ -25,7 +25,10 @@ class ReadFile {
 
     // FILL IN THIS METHOD - Hint: create a stream to 
     // send the filename to the server
-
+    DataOutputStream dos = new DataOutputStream(s.getOutputStream()); //写Socket的输出流
+    dos.writeUTF(fileName);
+    dos.flush();
+    dos.close();
   }
 
   // This method will receive the file from the Server, 
